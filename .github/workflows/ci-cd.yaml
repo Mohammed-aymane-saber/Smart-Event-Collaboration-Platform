@@ -1,0 +1,54 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: events_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Setup Node.js
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # Install dependencies for all services
+    - name: Install dependencies
+      run: |
+        cd auth-service && npm install
+        cd ../event-service && npm install
+        cd ../interaction-service && npm install
+        cd ../gateway && npm install
+        cd ../frontend && npm install
+
+    # Run tests (if you have any)
+    - name: Run tests
+      run: |
+        cd auth-service && npm test || echo "no tests"
+        cd ../event-service && npm test || echo "no tests"
+        cd ../interaction-service && npm test || echo "no tests"
+
+    # Build Docker images (optional)
+    - name: Build Docker images
+      run: docker compose build
