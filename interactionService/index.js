@@ -3,8 +3,12 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
+const promBundle = require('express-prom-bundle');
+const promClient = require('prom-client');
+promClient.collectDefaultMetrics();
 
 const app = express();
+app.use(promBundle({ includeMethod: true, includePath: true, metricsPath: '/metrics' }));
 app.use(cors());
 app.use(express.json());
 

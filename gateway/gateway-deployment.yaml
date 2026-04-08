@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: gateway
+          image: aymanesbe3/gateway:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: AUTH_URL
+              value: "http://auth-service:3001"
+            - name: EVENT_URL
+              value: "http://event-service:3002"
+            - name: INTERACTION_URL
+              value: "http://interaction-service:3003"

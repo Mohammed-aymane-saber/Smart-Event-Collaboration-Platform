@@ -1,8 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const promBundle = require('express-prom-bundle');
+const promClient = require('prom-client');
+promClient.collectDefaultMetrics();
 
 const app = express();
+app.use(promBundle({ includeMethod: true, includePath: true, metricsPath: '/metrics' }));
 app.use(cors());
 app.use(express.json());
 

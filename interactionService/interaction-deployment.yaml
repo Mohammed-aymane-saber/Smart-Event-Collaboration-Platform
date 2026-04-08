@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interaction-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: interaction-service
+  template:
+    metadata:
+      labels:
+        app: interaction-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3003"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: interaction-service
+          image: aymanesbe3/interaction-service:latest
+          ports:
+            - containerPort: 3003
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_USER
+              value: root
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_NAME
+              value: events_db
