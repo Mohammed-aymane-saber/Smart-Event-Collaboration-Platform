@@ -36,9 +36,9 @@ jobs:
     # Install dependencies for all services
     - name: Install dependencies
       run: |
-        cd auth-service && npm install
-        cd ../event-service && npm install
-        cd ../interaction-service && npm install
+        cd authService && npm install
+        cd ../eventService && npm install
+        cd ../interactionService && npm install
         cd ../gateway && npm install
         cd ../frontend && npm install
 
