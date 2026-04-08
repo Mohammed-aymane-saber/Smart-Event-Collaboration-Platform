@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
 
     services:
@@ -27,28 +27,31 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # Setup Node.js
+    # Setup Node.js v20 (Required for Vite) and enable NPM caching!
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
 
-    # Install dependencies for all services
+    # Install dependencies faster concurrently
     - name: Install dependencies
       run: |
-        cd authService && npm install
-        cd ../eventService && npm install
-        cd ../interactionService && npm install
-        cd ../gateway && npm install
-        cd ../frontend && npm install
+        npm --prefix authService ci &
+        npm --prefix eventService ci &
+        npm --prefix interactionService ci &
+        npm --prefix gateway ci &
+        npm --prefix frontend ci &
+        wait
 
-    # Run tests (if you have any)
+    # Run tests (Fixed folder names)
     - name: Run tests
       run: |
-        cd auth-service && npm test || echo "no tests"
-        cd ../event-service && npm test || echo "no tests"
-        cd ../interaction-service && npm test || echo "no tests"
+        npm --prefix authService test || echo "no tests"
+        npm --prefix eventService test || echo "no tests"
+        npm --prefix interactionService test || echo "no tests"
 
-    # Build Docker images (optional)
+    # Build Docker images
     - name: Build Docker images
       run: docker compose build
