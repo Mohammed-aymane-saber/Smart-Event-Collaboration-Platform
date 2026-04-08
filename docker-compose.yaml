@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_URL=http://auth-service:3001
+      - EVENT_URL=http://event-service:3002
+      - INTERACTION_URL=http://interaction-service:3003
+    depends_on:
+      - auth-service
+      - event-service
+      - interaction-service
+
+  auth-service:
+    build: ./authService
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=events_db
+
+  event-service:
+    build: ./eventService
+    ports:
+      - "3002:3002"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=events_db
+
+  interaction-service:
+    build: ./interactionService
+    ports:
+      - "3003:3003"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=events_db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - gateway
+
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: events_db
+    ports:
+      - "3307:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - mysql
