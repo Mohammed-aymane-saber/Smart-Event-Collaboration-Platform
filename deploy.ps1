@@ -21,10 +21,10 @@ foreach ($service in $services) {
     docker push aymanesbe3/$imageName`:latest
 }
 
-Write-Host "`n[3/3] Redémarrage à chaud du Cluster Kubernetes..." -ForegroundColor Yellow
-kubectl rollout restart deployment auth-service event-service interaction-service gateway frontend
+Write-Host "`n[3/3] Synchronisation via Argo CD (GitOps)..." -ForegroundColor Yellow
+Write-Host "Argo CD détectera automatiquement les nouvelles images poussées sur Docker Hub." -ForegroundColor Gray
 
 Write-Host "`n==================================" -ForegroundColor Green
-Write-Host "✅ DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !" -ForegroundColor Green
-Write-Host "Les nouveaux pods sont en train de démarrer avec vos modifications." -ForegroundColor Green
+Write-Host "✅ IMAGES POUSSÉES AVEC SUCCÈS !" -ForegroundColor Green
+Write-Host "Le cluster se synchronisera via Argo CD sous peu." -ForegroundColor Green
 Write-Host "==================================" -ForegroundColor Green
